@@ -4,55 +4,53 @@
 #include <fmt/core.h>
 #include <regex>
 
-inline const std::regex& filtration();
-inline bool isOutOfRange(const std::string& str);
-inline std::string find_string(const std::string& str);
+namespace {
+    /**
+     * ^exit  Begins with literal 'exit' (case-sensitive)
+     * \\(    Matches a left parenthesis
+     * -?     Optional minus sign for negative numbers
+     * \\d+   Matches one or more digits
+     * \\)$   Ends with a right parenthesis
+    **/
+    inline const std::regex& filtration() {
+        static const std::regex instance("(^exit\\(-?\\d+\\)$)");
+        return instance;
+    }
 
-/**
- * ^exit  Begins with literal 'exit' (case-sensitive)
- * \\(    Matches a left parenthesis
- * -?     Optional minus sign for negative numbers
- * \\d+   Matches one or more digits
- * \\)$   Ends with a right parenthesis
-**/
-inline const std::regex& filtration() {
-    static const std::regex instance("(^exit\\(-?\\d+\\)$)");
-    return instance;
-}
+    inline bool isOutOfRange(const std::string& str) {
+        if (str.empty()) return true;
+        size_t i = 0;
+        bool negative = false;
+        if (str[i] == '-') {
+            negative = true;
+            ++i;
+        } else if (str[i] == '+') {
+            ++i;}
+        if (i >= str.size() || !std::isdigit(str[i])) return true;
+        while (i < str.size() && str[i] == '0') ++i;
+        if (i == str.size()) return false;
+        size_t length = str.size() - i;
+        if (length > 10) return true;
+        const std::string max_value = negative ? "2147483648" : "2147483647";
+        if (length == 10) {
+            for (size_t j = 0; j < 10; ++j) {
+                if (str[i + j] > max_value[j]) return true;
+                else if (str[i + j] < max_value[j]) break;}}
 
-inline bool isOutOfRange(const std::string& str) {
-    if (str.empty()) return true;
-    size_t i = 0;
-    bool negative = false;
-    if (str[i] == '-') {
-        negative = true;
-        ++i;
-    } else if (str[i] == '+') {
-        ++i;}
-    if (i >= str.size() || !std::isdigit(str[i])) return true;
-    while (i < str.size() && str[i] == '0') ++i;
-    if (i == str.size()) return false;
-    size_t length = str.size() - i;
-    if (length > 10) return true;
-    const std::string max_value = negative ? "2147483648" : "2147483647";
-    if (length == 10) {
-        for (size_t j = 0; j < 10; ++j) {
-            if (str[i + j] > max_value[j]) return true;
-            else if (str[i + j] < max_value[j]) break;}}
+        return false;
+    }
 
-    return false;
-}
+    inline std::string find_string(const std::string& str) {
+        size_t startPos = str.find('(');
+        if (startPos == std::string::npos) {
+            return "";}
 
-inline std::string find_string(const std::string& str) {
-    size_t startPos = str.find('(');
-    if (startPos == std::string::npos) {
-        return "";}
+        size_t endPos = str.find(')', startPos + 1);
+        if (endPos == std::string::npos) {
+            return "";}
 
-    size_t endPos = str.find(')', startPos + 1);
-    if (endPos == std::string::npos) {
-        return "";}
-
-    return str.substr(startPos + 1, endPos - startPos - 1);
+        return str.substr(startPos + 1, endPos - startPos - 1);
+    }
 };
 
 #ifdef _WIN32
@@ -280,6 +278,6 @@ inline void AWML::paused() {
 
     AWML::getch();
 };
-#endif  // _WIN32 __LINUX__
+#endif  // Windows Linux
 
 #endif  // PAUSE_H
