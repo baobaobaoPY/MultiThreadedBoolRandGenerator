@@ -12,12 +12,12 @@ namespace {
      * \\d+   Matches one or more digits
      * \\)$   Ends with a right parenthesis
     **/
-    inline const std::regex& filtration() {
+    const std::regex& filtration() {
         static const std::regex instance("(^exit\\(-?\\d+\\)$)");
         return instance;
     }
 
-    inline bool isOutOfRange(const std::string& str) {
+    bool isOutOfRange(const std::string& str) {
         if (str.empty()) return true;
         size_t i = 0;
         bool negative = false;
@@ -40,7 +40,7 @@ namespace {
         return false;
     }
 
-    inline std::string find_string(const std::string& str) {
+    std::string find_string(const std::string& str) {
         size_t startPos = str.find('(');
         if (startPos == std::string::npos) {
             return "";}
