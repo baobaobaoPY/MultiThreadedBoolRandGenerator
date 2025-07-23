@@ -1,5 +1,5 @@
-#ifndef PAUSED_H
-#define PAUSED_H
+#ifndef PAUSED_H_
+#define PAUSED_H_
 
 #include <fmt/core.h>
 #include <regex>
@@ -23,8 +23,8 @@ namespace {
         bool negative = false;
         if (str[i] == '-') {
             negative = true;
-            ++i;
-        } else if (str[i] == '+') {
+            ++i;} 
+         else if (str[i] == '+') {
             ++i;}
         if (i >= str.size() || !std::isdigit(str[i])) return true;
         while (i < str.size() && str[i] == '0') ++i;
@@ -251,10 +251,10 @@ inline void AWML::paused(const std::string& TR_TO_SK) {
 
             std::string language = AWML::GetSystemLanguage();
             if (language == "zh_CN") {
-                fmt::print("请按任意键继续. . .");
-            } else if (language == "zh_TW" || language == "zh_HK") {
-                fmt::print("請按任意鍵繼續. . .");
-            } else {
+                fmt::print("请按任意键继续. . .");} 
+             else if (language == "zh_TW" || language == "zh_HK") {
+                fmt::print("請按任意鍵繼續. . .");}
+             else {
                 fmt::print("Press any key to continue. . .");}
 
             AWML::getch();
@@ -270,14 +270,14 @@ inline void AWML::paused() {
     std::string language = AWML::GetSystemLanguage();
 
     if (language == "zh_CN") {
-        fmt::print("请按任意键继续. . .");
-    } else if (language == "zh_TW" || language == "zh_HK") {
-        fmt::print("請按任意鍵繼續. . .");
-    } else {
+        fmt::print("请按任意键继续. . .");} 
+     else if (language == "zh_TW" || language == "zh_HK") {
+        fmt::print("請按任意鍵繼續. . .");}
+     else {
         fmt::print("Press any key to continue. . .");}
 
     AWML::getch();
 };
 #endif  // Windows Linux
 
-#endif  // PAUSE_H
+#endif  // PAUSE_H_
