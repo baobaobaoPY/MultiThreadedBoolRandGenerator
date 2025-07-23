@@ -1,5 +1,5 @@
 #include <fmt/core.h>  // 引入第三方库-高效输出
-#include "paused.h"  // 引入自定义库-阻塞暂停
+#include <paused.h>    // 引入自定义库-阻塞暂停
 #include <iostream>
 #include <random>
 #include <vector>
@@ -94,7 +94,12 @@ int main(void) {
     for (long long i = 0; i < thread_count; ++i) {
         threads.emplace_back([&, i] {
             // 每个线程享用独立的随机引擎
-            std::random_device rd;
+            #ifdef _WIN32
+                std::random_device rd;
+            #elif defined(__linux__) || defined(__APPLE__)
+                std::random_device rd("/dev/urandom");
+            #endif
+
             std::seed_seq seq{rd(), rd(), static_cast<uint32_t>(i)};
             thread_local std::mt19937_64 engine(seq);
 
