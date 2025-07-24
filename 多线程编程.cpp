@@ -10,14 +10,17 @@
 #include <regex>
 
 
-const short thread_count = 32;  // CPU线程-逻辑处理器
-const long long batch_size = 5000;  // 每个线程每次处理n次任务
-const long long Imodel = thread_count * batch_size;
+const unsigned short thread_count = 32;  // CPU线程-逻辑处理器
+const unsigned long long batch_size = 5000;  // 每个线程每次处理n次任务
+const unsigned long long Imodel = thread_count * batch_size;
 
 // 线程执行
-void random_task(std::mt19937_64& engine, long long& local_true, long long& local_false) {
+void random_task(std::mt19937_64& engine,
+                 unsigned long long& local_true,
+                 unsigned long long& local_false) {
+
     std::bernoulli_distribution dist(0.5);
-    for (long long i = 0; i < batch_size; ++i) {
+    for (unsigned long long i = 0; i < batch_size; ++i) {
         if (dist(engine)) {
             ++local_true;
         } else {
@@ -27,7 +30,7 @@ void random_task(std::mt19937_64& engine, long long& local_true, long long& loca
 }
 
 // 处理用户输入
-void input_handler(long long& total_iterations) { 
+void input_handler(unsigned long long& total_iterations) { 
     while (true) {
         fmt::print("请输入{}的倍数：", Imodel);
         std::string input;
@@ -62,28 +65,28 @@ void input_handler(long long& total_iterations) {
 }
 
 
-int main(void) {
+int main (void) {
 #ifdef _WIN32
     system("chcp 65001");
 #endif
     fmt::print("\033c");
-    long long total_iterations = 0;
-    std::atomic<long long> completed_count(0);
+    unsigned long long total_iterations = 0;
+    std::atomic<unsigned long long> completed_count(0);
 
     // 调用`处理用户输入`的函数
     input_handler(total_iterations);
 
     // 分配任务给各线程
-    const long long iterations_per_thread = total_iterations / thread_count;
-    const long long batches_per_thread = iterations_per_thread / batch_size;
+    const unsigned long long iterations_per_thread = total_iterations / thread_count;
+    const unsigned long long batches_per_thread = iterations_per_thread / batch_size;
 
-    fmt::print("\n");
+    fmt::print("\n");  // 换行保持控制台输出清爽
 
     // 计数器
-    long long global_true = 0;
-    long long global_false = 0;
-    thread_local long long local_true = 0;
-    thread_local long long local_false = 0;
+    unsigned long long global_true = 0;
+    unsigned long long global_false = 0;
+    unsigned long long thread_local local_true = 0;
+    unsigned long long thread_local local_false = 0;
     std::mutex counter_mutex;
 
     // 创建并开启计时器
@@ -91,7 +94,7 @@ int main(void) {
 
     // 创建线程池
     std::vector<std::thread> threads;
-    for (long long i = 0; i < thread_count; ++i) {
+    for (unsigned long long i = 0; i < thread_count; ++i) {
         threads.emplace_back([&, i] {
             // 每个线程享用独立的随机引擎
             #ifdef _WIN32
@@ -103,14 +106,17 @@ int main(void) {
             std::seed_seq seq{rd(), rd(), static_cast<uint32_t>(i)};
             thread_local std::mt19937_64 engine(seq);
 
-            for (long long b = 0; b < batches_per_thread; ++b) {
+            for (unsigned long long b = 0; b < batches_per_thread; ++b) {
                 random_task(engine, local_true, local_false);
 
                 // 非阻塞式进度更新
-                long long current_completed = completed_count.fetch_add(batch_size);
+                unsigned long long current_completed = 
+                completed_count.fetch_add(batch_size);
+
                  if ((current_completed + batch_size) % Imodel == 0) {
                      std::lock_guard<std::mutex> lock(counter_mutex);
-                     fmt::print("已完成\x1b[94m{}\x1b[0m次真假随机生成！\n", current_completed + batch_size);
+                     fmt::print("已完成\x1b[94m{}\x1b[0m次真假随机生成！\r",
+                                current_completed + batch_size);
                  }
             }
 
@@ -131,9 +137,11 @@ int main(void) {
     std::chrono::duration<double> duration = end_time - start_time;
     double seconds = duration.count();
 
-    fmt::print("\n最终生成结果为：true`\x1b[92m{}\x1b[0m`, false`\x1b[91m{}\x1b[0m`\n", 
+    fmt::print("\n\n最终生成结果为：true`\x1b[92m{}\x1b[0m`, false`\x1b[91m{}\x1b[0m`\n", 
                global_true, global_false);
+
     fmt::print("耗时：\x1b[94m{:.6f}\x1b[0ms\n", seconds);
+
 
     AWML::paused("exit(0)");
     return 0;
