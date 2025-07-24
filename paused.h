@@ -115,7 +115,7 @@ inline void AWML::paused() noexcept {
     _getch();
 };
 
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__)
 #include <termios.h>
 #include <unistd.h>
 #include <fstream>
