@@ -52,8 +52,8 @@ namespace {
 **/
 class AWML {
 public:
-    static inline void paused(const std::string& PROMPT, const std::string& TR_TO_SK) noexcept;
-    static inline void paused(const std::string& TR_TO_SK) noexcept;
+    static inline void paused(const std::string& cexit, const std::string& message) noexcept;
+    static inline void paused(const std::string& message) noexcept;
     static inline void paused() noexcept;
 private:
     static std::string GetSystemCodePage();
@@ -75,24 +75,35 @@ std::string AWML::GetSystemCodePage() {
     return std::string(szValue);
 };
 
-inline void AWML::paused(const std::string& PROMPT, const std::string& TR_TO_SK) noexcept {
+/**
+ * Pauses program execution and waits for keypress, supporting custom prompts and exit commands.
+ * Displays user-defined prompt text or exit message when required.
+ * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
+ * otherwise treated as custom prompt text.
+**/
+inline void AWML::paused(const std::string& cexit, const std::string& message) noexcept {
     while (_kbhit()) {_getch();}
-    if (std::regex_match(TR_TO_SK, filtration)) {
-        std::string string_Texit = find_string(TR_TO_SK);
+    if (std::regex_match(message, filtration)) {
+        std::string string_Texit = find_string(message);
         int int_Texit;
         if (!isOutOfRange(string_Texit)) {
             int_Texit = std::stoi(string_Texit);
-            fmt::print("{}", PROMPT);
+            fmt::print("{}", cexit);
             _getch();
             exit(int_Texit);}}
-    fmt::print("{}", PROMPT);
+    fmt::print("{}", cexit);
     _getch();
 };
 
-inline void AWML::paused(const std::string& TR_TO_SK) noexcept {
+/**
+ * Pauses program execution and waits for a keypress, displaying system-default prompt message based on OS language.
+ * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
+ * otherwise treated as custom prompt text to display!
+**/
+inline void AWML::paused(const std::string& message) noexcept {
     while (_kbhit()) {_getch();}
-    if (std::regex_match(TR_TO_SK, filtration)) {
-        std::string string_Texit = find_string(TR_TO_SK);
+    if (std::regex_match(message, filtration)) {
+        std::string string_Texit = find_string(message);
         int int_Texit;
         if (!isOutOfRange(string_Texit)) {
             int_Texit = std::stoi(string_Texit);
@@ -102,10 +113,14 @@ inline void AWML::paused(const std::string& TR_TO_SK) noexcept {
             else {fmt::print("Press any key to continue. . .");}
             _getch();
             exit(int_Texit);}}
-    fmt::print("{}", TR_TO_SK);
+    fmt::print("{}", message);
     _getch();
 };
 
+/**
+ * Pauses program execution and waits for a keypress, displaying system language-specific default prompt message
+ * No-parameter version, only shows the default "Press any key to continue" prompt
+**/
 inline void AWML::paused() noexcept {
     while (_kbhit()) {_getch();}
     std::string CodePage = AWML::GetSystemCodePage();
@@ -128,8 +143,8 @@ inline void AWML::paused() noexcept {
 **/
 class AWML {
 public:
-    static inline void paused(const std::string& PROMPT, const std::string& TR_TO_SK) noexcept;
-    static inline void paused(const std::string& TR_TO_SK) noexcept;
+    static inline void paused(const std::string& cexit, const std::string& message) noexcept;
+    static inline void paused(const std::string& message) noexcept;
     static inline void paused() noexcept;
 private:
     static inline void getch();
@@ -168,24 +183,35 @@ inline std::string AWML::GetSystemLanguage() {
     return "C";
 };
 
-inline void AWML::paused(const std::string& PROMPT, const std::string& TR_TO_SK) noexcept {
+/**
+ * Pauses program execution and waits for keypress, supporting custom prompts and exit commands.
+ * Displays user-defined prompt text or exit message when required.
+ * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
+ * otherwise treated as custom prompt text.
+**/
+inline void AWML::paused(const std::string& cexit, const std::string& message) noexcept {
     tcflush(STDIN_FILENO, TCIFLUSH);
-    if (std::regex_match(TR_TO_SK, filtration)) {
-        std::string string_Texit = find_string(TR_TO_SK);
+    if (std::regex_match(message, filtration)) {
+        std::string string_Texit = find_string(message);
         int int_Texit;
         if (!isOutOfRange(string_Texit)) {
             int_Texit = std::stoi(string_Texit);
-            fmt::print("{}", PROMPT);
+            fmt::print("{}", cexit);
             AWML::getch();
             exit(int_Texit);}}
-    fmt::print("{}", PROMPT);
+    fmt::print("{}", cexit);
     AWML::getch();
 };
 
-inline void AWML::paused(const std::string& TR_TO_SK) noexcept {
+/**
+ * Pauses program execution and waits for a keypress, displaying system-default prompt message based on OS language.
+ * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
+ * otherwise treated as custom prompt text to display!
+**/
+inline void AWML::paused(const std::string& message) noexcept {
     tcflush(STDIN_FILENO, TCIFLUSH);
-    if (std::regex_match(TR_TO_SK, filtration)) {
-        std::string string_Texit = find_string(TR_TO_SK);
+    if (std::regex_match(message, filtration)) {
+        std::string string_Texit = find_string(message);
         int int_Texit;
         if (!isOutOfRange(string_Texit)) {
             int_Texit = std::stoi(string_Texit);
@@ -195,10 +221,14 @@ inline void AWML::paused(const std::string& TR_TO_SK) noexcept {
             else {fmt::print("Press any key to continue. . .");}
             AWML::getch();
             exit(int_Texit);}}
-    fmt::print("{}", TR_TO_SK);
+    fmt::print("{}", message);
     AWML::getch();
 };
 
+/**
+ * Pauses program execution and waits for a keypress, displaying system language-specific default prompt message
+ * No-parameter version, only shows the default "Press any key to continue" prompt
+**/
 inline void AWML::paused() noexcept {
     tcflush(STDIN_FILENO, TCIFLUSH);
     std::string language = AWML::GetSystemLanguage();
