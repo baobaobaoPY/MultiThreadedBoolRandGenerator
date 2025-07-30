@@ -114,11 +114,11 @@ int main (void) {
                 {completed_count.fetch_add(batch_size)};
 
                 // 进度输出已经充分优化，即使注释也只能快上`0.3s至0.8s`
-                if ((current_completed + batch_size) % Imodel == 0) {
-                     std::lock_guard<std::mutex> lock(counter_mutex);
-                     fmt::print("已完成\x1b[94m{}\x1b[0m次真假随机生成！\r",
-                                current_completed + batch_size);
-                 }
+                // if ((current_completed + batch_size) % Imodel == 0) {
+                //      std::lock_guard<std::mutex> lock(counter_mutex);
+                //      fmt::print("已完成\x1b[94m{}\x1b[0m次真假随机生成！\r",
+                //                 current_completed + batch_size);
+                //  }
             }
 
             // 汇总本地计数
