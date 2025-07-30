@@ -110,7 +110,7 @@ int main (void) {
                 random_task(engine, local_true, local_false);
 
                 // 非阻塞式进度更新
-                unsigned long long current_completed \ 
+                unsigned long long current_completed \
                 {completed_count.fetch_add(batch_size)};
 
                 // 进度输出已经充分优化，即使注释也只能快上`0.3s至0.8s`
