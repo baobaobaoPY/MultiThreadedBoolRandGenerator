@@ -45,9 +45,9 @@ ThreadResult random_task(XorShift64Star& engine, unsigned long long batches) {
     ThreadResult result{0, 0};
 
     // 预计算总迭代次数，避免更多循环产生的开销
-    const unsigned long long total_iterations = batches * batch_size;
+    const unsigned long long total_iterations{batches * batch_size};
 
-    for (unsigned long long i = 0; i < total_iterations; ++i) {
+    for (unsigned long long i{0}; i < total_iterations; ++i) {
         // 使用位运算判断奇偶性，比bernoulli_distribution更快
         if (engine() & 1) {
             ++result.true_count;
@@ -110,7 +110,7 @@ int main() {
     // 预生成种子，避免在线程中创建
     std::random_device rd;
     std::vector<uint64_t> seeds(thread_count);
-    for (size_t i = 0; i < thread_count; ++i) {
+    for (size_t i{0}; i < thread_count; ++i) {
         seeds[i] = (static_cast<uint64_t>(rd()) << 32) | rd() | (i + 1);
     }
 
@@ -120,13 +120,13 @@ int main() {
     // 创建开始计时器
     auto start_time{std::chrono::high_resolution_clock::now()};
 
-    for (unsigned short i = 0; i < thread_count; ++i) {
-        threads.emplace_back([&, i, seed = seeds[i]] {
+    for (unsigned short i{0}; i < thread_count; ++i) {
+        threads.emplace_back([&, i, seed{seeds[i]}] {
             // 每个线程独立享用高速伪随机数生成器
             XorShift64Star engine(seed);
 
             // 执行随机任务
-            ThreadResult result = random_task(engine, batches_per_thread);
+            ThreadResult result{random_task(engine, batches_per_thread)};
 
             // 在最后进行一次原子操作，以减少竞争
             global_true.fetch_add(result.true_count, std::memory_order_relaxed);
@@ -134,16 +134,21 @@ int main() {
         });
     }
 
+    // 等待所有线程任务完成
     for (auto& t : threads) {
         t.join();
     }
 
+    // 添加计时器终点并核算耗时
     auto end_time{std::chrono::high_resolution_clock::now()};
     std::chrono::duration<double> duration{end_time - start_time};
     double seconds{duration.count()};
 
-    fmt::print("\n\n最终生成结果为：true`\x1b[92m{}\x1b[0m`, false`\x1b[91m{}\x1b[0m`\n", 
+    // 输出最终生成结果
+    fmt::print("\n\n生成结果为：true`\x1b[92m{}\x1b[0m`, false`\x1b[91m{}\x1b[0m`\n", 
                global_true.load(), global_false.load());
+
+    // 输出整个过程所花费的时间
     fmt::print("耗时：\x1b[94m{:.6f}\x1b[0ms\n", seconds);
 
     AWML::paused("exit(0)");
