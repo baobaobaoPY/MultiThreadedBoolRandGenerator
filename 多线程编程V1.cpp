@@ -110,10 +110,10 @@ int main (void) {
                 random_task(engine, local_true, local_false);
 
                 // 非阻塞式进度更新
-                unsigned long long current_completed  // ↩
+                unsigned long long current_completed \ 
                 {completed_count.fetch_add(batch_size)};
 
-                // 进度输出已经充分优化，即使注释也只能快上`0.3s至0.5s`
+                // 进度输出已经充分优化，即使注释也只能快上`0.3s至0.8s`
                 if ((current_completed + batch_size) % Imodel == 0) {
                      std::lock_guard<std::mutex> lock(counter_mutex);
                      fmt::print("已完成\x1b[94m{}\x1b[0m次真假随机生成！\r",
@@ -138,7 +138,7 @@ int main (void) {
     std::chrono::duration<double> duration{end_time - start_time};
     double seconds{duration.count()};
 
-    fmt::print("\n\n最终生成结果为：true`\x1b[92m{}\x1b[0m`, false`\x1b[91m{}\x1b[0m`\n", 
+    fmt::print("\n\n生成结果为：true`\x1b[92m{}\x1b[0m`, false`\x1b[91m{}\x1b[0m`\n", 
                global_true.load(), global_false.load());
     fmt::print("耗时：\x1b[94m{:.6f}\x1b[0ms\n", seconds);
 
