@@ -10,7 +10,7 @@
 
 
 const unsigned short thread_count{32};  // CPU线程数-逻辑处理器数量
-const unsigned long long batch_size{5000};  // 每个线程处理的n次量
+const unsigned long long batch_size{5000};  // 每个线程每次处理的n次任务量
 const unsigned long long Imodel{thread_count * batch_size};
 
 // 用xoshiro256**作为mt19937_64的替代，因为它比mt19937_64更快
