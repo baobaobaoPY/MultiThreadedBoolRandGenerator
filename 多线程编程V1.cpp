@@ -1,5 +1,5 @@
 #include <fmt/core.h>  // 引入第三方库-高效输出
-#include <paused.h>    // 引入自定义库-阻塞暂停
+#include "paused.h"    // 引入自定义库-阻塞暂停
 #include <iostream>
 #include <random>
 #include <vector>
