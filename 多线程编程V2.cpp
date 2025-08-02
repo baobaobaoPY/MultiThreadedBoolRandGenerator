@@ -1,5 +1,5 @@
 #include <fmt/core.h>
-#include <paused.h>
+#include "paused.h"
 #include <iostream>
 #include <random>
 #include <vector>
