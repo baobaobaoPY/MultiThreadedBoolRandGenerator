@@ -41,6 +41,7 @@ namespace {
 };
 
 #ifdef _WIN32
+#pragma comment(lib, "advapi32.lib")
 #include <windows.h>
 #include <conio.h>
 
@@ -56,10 +57,10 @@ public:
     static inline void paused(const std::string& message) noexcept;
     static inline void paused() noexcept;
 private:
-    static std::string GetSystemCodePage();
+    static inline std::string GetSystemCodePage();
 };
 
-std::string AWML::GetSystemCodePage() {
+inline std::string AWML::GetSystemCodePage() {
     HKEY hKey;
     LONG lResult;
     DWORD dwType = REG_SZ;
@@ -239,4 +240,4 @@ inline void AWML::paused() noexcept {
 };
 #endif  // Windows Linux
 
-#endif  // PAUSE_H_
+#endif  // PAUSED_H_
