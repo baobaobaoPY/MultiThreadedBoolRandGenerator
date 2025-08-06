@@ -80,7 +80,7 @@ int main (void) {
     const unsigned long long iterations_per_thread{total_iterations / thread_count};
     const unsigned long long batches_per_thread{iterations_per_thread / batch_size};
 
-    fmt::print("\n");  // 换行保持控制台输出清爽
+    fmt::print("\x1b[?25l\n");  // 换行保持控制台输出清爽
 
     // 计数器
     std::atomic<unsigned long long> global_true{0};
@@ -99,7 +99,7 @@ int main (void) {
             // 每个线程享用独立的随机引擎
             #ifdef _WIN32
                 std::random_device rd;
-            #elif defined(__linux__) || defined(__APPLE__)
+            #elif defined(__linux__)
                 std::random_device rd("/dev/urandom");
             #endif
 
@@ -140,7 +140,7 @@ int main (void) {
 
     fmt::print("\n\n生成结果为：true`\x1b[92m{}\x1b[0m`, false`\x1b[91m{}\x1b[0m`\n", 
                global_true.load(), global_false.load());
-    fmt::print("耗时：\x1b[94m{:.6f}\x1b[0ms\n", seconds);
+    fmt::print("耗时：\x1b[94m{:.6f}\x1b[0ms\x1b[?25h\n", seconds);
 
 
     AWML::paused("exit(0)");
