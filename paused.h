@@ -6,6 +6,7 @@
 #include <regex>
 
 using std::string;
+using fmt::print;
 
 /** AWML - API 
  * A -> Automatic Derivation Platform
@@ -22,6 +23,7 @@ private:
     static inline const std::regex& filtration() noexcept;
     static inline bool isOutOfRange(const string& str) noexcept;
     static inline string find_string(const string& str) noexcept;
+    static inline string char_sequence(unsigned char Symbol) noexcept;
 
     static inline string GetSystemCodePage() noexcept;
     static inline void getch() noexcept;
@@ -67,6 +69,16 @@ inline string AWML::find_string(const string& str) noexcept {
     return str.substr(startPos + 1, endPos - startPos - 1);
 };
 
+inline string AWML::char_sequence(unsigned char Symbol) noexcept {
+    string a{"\xe8\xaf\xb7\xe6\x8c\x89\xe4\xbb\xbb\xe6\x84\x8f\xe9\x94\xae\xe7\xbb\xa7\xe7\xbb\xad\x2e\x20\x2e\x20\x2e"};
+    string b{"\xe8\xab\x8b\xe6\x8c\x89\xe4\xbb\xbb\xe6\x84\x8f\xe9\x8d\xb5\xe7\xb9\xbc\xe7\xba\x8c\x2e\x20\x2e\x20\x2e"};
+    string c{"\x50\x72\x65\x73\x73\x20\x61\x6e\x79\x20\x6b\x65\x79\x20\x74\x6f\x20\x63\x6f\x6e\x74\x69\x6e\x75\x65\x2e\x20\x2e\x20\x2e"};
+    if (Symbol == 1) {return a;} 
+    else if (Symbol == 2) {return b;}
+
+    return c;
+};
+
 #ifdef _WIN32
 #pragma comment(lib, "advapi32.lib")
 #include <windows.h>
@@ -96,15 +108,15 @@ inline string AWML::GetSystemCodePage() noexcept {
 **/
 inline void AWML::paused(const string& cexit, const string& message) {
     while (_kbhit()) {_getch();}
-    if (std::regex_match(message, filtration())) {
-        string string_Texit = find_string(message);
+    if (std::regex_match(message, AWML::filtration())) {
+        string string_Texit = AWML::find_string(message);
         int int_Texit;
-        if (!isOutOfRange(string_Texit)) {
+        if (!AWML::isOutOfRange(string_Texit)) {
             int_Texit = std::stoi(string_Texit);
-            fmt::print("{}", cexit);
+            print("{}", cexit);
             _getch();
             exit(int_Texit);}}
-    fmt::print("{}", cexit);
+    print("{}", cexit);
     _getch();
 };
 
@@ -115,18 +127,19 @@ inline void AWML::paused(const string& cexit, const string& message) {
 **/
 inline void AWML::paused(const string& message) {
     while (_kbhit()) {_getch();}
-    if (std::regex_match(message, filtration())) {
-        string string_Texit = find_string(message);
+    if (std::regex_match(message, AWML::filtration())) {
+        string string_Texit = AWML::find_string(message);
         int int_Texit;
-        if (!isOutOfRange(string_Texit)) {
+        if (!AWML::isOutOfRange(string_Texit)) {
             int_Texit = std::stoi(string_Texit);
             string CodePage = AWML::GetSystemCodePage();
-            if (CodePage == "936") {fmt::print("请按任意键继续. . .");}
-            else if (CodePage == "950" || CodePage == "938") {fmt::print("請按任意鍵繼續. . .");}
-            else {fmt::print("Press any key to continue. . .");}
+            if (CodePage == "936") {print("{}", AWML::char_sequence(1));}
+            else if (CodePage == "950" || CodePage == "938") \
+                    {print("{}", AWML::char_sequence(2));}
+            else {print("{}", AWML::char_sequence(0));}
             _getch();
             exit(int_Texit);}}
-    fmt::print("{}", message);
+    print("{}", message);
     _getch();
 };
 
@@ -137,9 +150,10 @@ inline void AWML::paused(const string& message) {
 inline void AWML::paused() {
     while (_kbhit()) {_getch();}
     string CodePage = AWML::GetSystemCodePage();
-    if (CodePage == "936") {fmt::print("请按任意键继续. . .");}
-    else if (CodePage == "950" || CodePage == "938") {fmt::print("請按任意鍵繼續. . .");}
-    else {fmt::print("Press any key to continue. . .");}
+    if (CodePage == "936") {print("{}", AWML::char_sequence(1));}
+    else if (CodePage == "950" || CodePage == "938") \
+            {print("{}", AWML::char_sequence(2));}
+    else {print("{}", AWML::char_sequence(0));}
     _getch();
 };
 
@@ -162,23 +176,23 @@ inline void AWML::getch() noexcept {
     tcflush(STDIN_FILENO, TCIFLUSH);
     termios.c_lflag = originalLflag;
     tcsetattr(STDIN_FILENO, TCSANOW, &termios);
-    if (result > 0) {fmt::print("\n");}
+    if (result > 0) {print("\n");}
 }
 
 inline string AWML::GetSystemLanguage() noexcept {
-    std::ifstream OpenFile("/etc/locale.conf");
-    if (!OpenFile.is_open()) {return "C";}
-    string line;
-    while (std::getline(OpenFile, line)) {
-        if (line.empty() || line[0] == '#')
-            continue;
-        size_t equal_pos = line.find('=');
-        size_t dot_pos = line.find('.', equal_pos + 1);
-        size_t start = equal_pos + 1;
-        size_t length = (dot_pos == string::npos) ? string::npos : dot_pos - start;
-        return line.substr(start, length);}
-    OpenFile.close();
-    return "C";
+    try {std::ifstream f("/etc/locale.conf");
+        if (!f) return "C";
+        string line;
+        while (std::getline(f, line)) {
+            if (line.empty() || line[0] == '#') continue;
+            const auto eq = line.find('=');
+            if (eq == string::npos) continue;
+            const auto dot = line.find('.', eq + 1);
+            const size_t start = eq + 1;
+            const size_t len = (dot == string::npos) ? string::npos : dot - start;
+            return line.substr(start, len);}
+        return "C";}
+    catch (...) {return "C";}
 };
 
 /**
@@ -189,15 +203,15 @@ inline string AWML::GetSystemLanguage() noexcept {
 **/
 inline void AWML::paused(const string& cexit, const string& message) {
     tcflush(STDIN_FILENO, TCIFLUSH);
-    if (std::regex_match(message, filtration())) {
-        string string_Texit = find_string(message);
+    if (std::regex_match(message, AWML::filtration())) {
+        string string_Texit = AWML::find_string(message);
         int int_Texit;
-        if (!isOutOfRange(string_Texit)) {
+        if (!AWML::isOutOfRange(string_Texit)) {
             int_Texit = std::stoi(string_Texit);
-            fmt::print("{}", cexit);
+            print("{}", cexit);
             AWML::getch();
             exit(int_Texit);}}
-    fmt::print("{}", cexit);
+    print("{}", cexit);
     AWML::getch();
 };
 
@@ -208,18 +222,19 @@ inline void AWML::paused(const string& cexit, const string& message) {
 **/
 inline void AWML::paused(const string& message) {
     tcflush(STDIN_FILENO, TCIFLUSH);
-    if (std::regex_match(message, filtration())) {
-        string string_Texit = find_string(message);
+    if (std::regex_match(message, AWML::filtration())) {
+        string string_Texit = AWML::find_string(message);
         int int_Texit;
-        if (!isOutOfRange(string_Texit)) {
+        if (!AWML::isOutOfRange(string_Texit)) {
             int_Texit = std::stoi(string_Texit);
             string language = AWML::GetSystemLanguage();
-            if (language == "zh_CN") {fmt::print("请按任意键继续. . .");} 
-            else if (language == "zh_TW" || language == "zh_HK") {fmt::print("請按任意鍵繼續. . .");}
-            else {fmt::print("Press any key to continue. . .");}
+            if (language == "zh_CN") {print("{}", AWML::char_sequence(1));} 
+            else if (language == "zh_TW" || language == "zh_HK") \
+                    {print("{}", AWML::char_sequence(2));}
+            else {print("{}", AWML::char_sequence(0));}
             AWML::getch();
             exit(int_Texit);}}
-    fmt::print("{}", message);
+    print("{}", message);
     AWML::getch();
 };
 
@@ -230,9 +245,10 @@ inline void AWML::paused(const string& message) {
 inline void AWML::paused() {
     tcflush(STDIN_FILENO, TCIFLUSH);
     string language = AWML::GetSystemLanguage();
-    if (language == "zh_CN") {fmt::print("请按任意键继续. . .");} 
-    else if (language == "zh_TW" || language == "zh_HK") {fmt::print("請按任意鍵繼續. . .");}
-    else {fmt::print("Press any key to continue. . .");}
+    if (language == "zh_CN") {print("{}", AWML::char_sequence(1));}
+    else if (language == "zh_TW" || language == "zh_HK") \
+            {print("{}", AWML::char_sequence(2));}
+    else {print("{}", AWML::char_sequence(0));}
     AWML::getch();
 };
 #endif  // Windows Linux
