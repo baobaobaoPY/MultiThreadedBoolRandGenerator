@@ -8,7 +8,7 @@
 using std::string;
 using fmt::print;
 
-/** AWML - API 
+/** AWML - API
  * A -> Automatic Derivation Platform
  * W -> Windows
  * M -> Macos
@@ -23,9 +23,9 @@ private:
     static inline const std::regex& filtration() noexcept;
     static inline bool isOutOfRange(const string& str) noexcept;
     static inline string find_string(const string& str) noexcept;
-    static inline string char_sequence(unsigned char Symbol) noexcept;
+    static inline const string& char_sequence(unsigned char Symbol) noexcept;
 
-    static inline string GetSystemCodePage() noexcept;
+    static string GetSystemCodePage() noexcept;
     static inline void getch() noexcept;
     static inline string GetSystemLanguage() noexcept;
 };
@@ -69,14 +69,12 @@ inline string AWML::find_string(const string& str) noexcept {
     return str.substr(startPos + 1, endPos - startPos - 1);
 };
 
-inline string AWML::char_sequence(unsigned char Symbol) noexcept {
-    string a{"\xe8\xaf\xb7\xe6\x8c\x89\xe4\xbb\xbb\xe6\x84\x8f\xe9\x94\xae\xe7\xbb\xa7\xe7\xbb\xad\x2e\x20\x2e\x20\x2e"};
-    string b{"\xe8\xab\x8b\xe6\x8c\x89\xe4\xbb\xbb\xe6\x84\x8f\xe9\x8d\xb5\xe7\xb9\xbc\xe7\xba\x8c\x2e\x20\x2e\x20\x2e"};
-    string c{"\x50\x72\x65\x73\x73\x20\x61\x6e\x79\x20\x6b\x65\x79\x20\x74\x6f\x20\x63\x6f\x6e\x74\x69\x6e\x75\x65\x2e\x20\x2e\x20\x2e"};
-    if (Symbol == 1) {return a;} 
-    else if (Symbol == 2) {return b;}
-
-    return c;
+inline const string& AWML::char_sequence(unsigned char Symbol) noexcept {
+    static const string \
+    a{"\xe8\xaf\xb7\xe6\x8c\x89\xe4\xbb\xbb\xe6\x84\x8f\xe9\x94\xae\xe7\xbb\xa7\xe7\xbb\xad\x2e\x20\x2e\x20\x2e"},
+    b{"\xe8\xab\x8b\xe6\x8c\x89\xe4\xbb\xbb\xe6\x84\x8f\xe9\x8d\xb5\xe7\xb9\xbc\xe7\xba\x8c\x2e\x20\x2e\x20\x2e"},
+    c{"\x50\x72\x65\x73\x73\x20\x61\x6e\x79\x20\x6b\x65\x79\x20\x74\x6f\x20\x63\x6f\x6e\x74\x69\x6e\x75\x65\x2e\x20\x2e\x20\x2e"};
+    switch(Symbol) {case 1:return a;case 2:return b;default:return c;}
 };
 
 #ifdef _WIN32
@@ -84,7 +82,7 @@ inline string AWML::char_sequence(unsigned char Symbol) noexcept {
 #include <windows.h>
 #include <conio.h>
 
-inline string AWML::GetSystemCodePage() noexcept {
+string AWML::GetSystemCodePage() noexcept {
     HKEY hKey;
     LONG lResult;
     DWORD dwType = REG_SZ;
