@@ -25,7 +25,7 @@ private:
     static inline string find_string(const string& str) noexcept;
     static inline const string& char_sequence(unsigned char Symbol) noexcept;
 
-    static string GetSystemCodePage() noexcept;
+    static inline string GetSystemCodePage() noexcept;
     static inline void getch() noexcept;
     static inline string GetSystemLanguage() noexcept;
 };
@@ -71,9 +71,9 @@ inline string AWML::find_string(const string& str) noexcept {
 
 inline const string& AWML::char_sequence(unsigned char Symbol) noexcept {
     static const string \
-    a{"\xe8\xaf\xb7\xe6\x8c\x89\xe4\xbb\xbb\xe6\x84\x8f\xe9\x94\xae\xe7\xbb\xa7\xe7\xbb\xad\x2e\x20\x2e\x20\x2e"},
-    b{"\xe8\xab\x8b\xe6\x8c\x89\xe4\xbb\xbb\xe6\x84\x8f\xe9\x8d\xb5\xe7\xb9\xbc\xe7\xba\x8c\x2e\x20\x2e\x20\x2e"},
-    c{"\x50\x72\x65\x73\x73\x20\x61\x6e\x79\x20\x6b\x65\x79\x20\x74\x6f\x20\x63\x6f\x6e\x74\x69\x6e\x75\x65\x2e\x20\x2e\x20\x2e"};
+    a{"\350\257\267\346\214\211\344\273\273\346\204\217\351\224\256\347\273\247\347\273\255. . ."},
+    b{"\350\253\213\346\214\211\344\273\273\346\204\217\351\215\265\347\271\274\347\272\214. . ."},
+    c{"\120\162\145\163\163\040\141\156\171\040\153\145\171\040\164\157\040\143\157\156\164\151\156\165\145. . ."};
     switch(Symbol) {case 1:return a;case 2:return b;default:return c;}
 };
 
@@ -82,7 +82,7 @@ inline const string& AWML::char_sequence(unsigned char Symbol) noexcept {
 #include <windows.h>
 #include <conio.h>
 
-string AWML::GetSystemCodePage() noexcept {
+inline string AWML::GetSystemCodePage() noexcept {
     HKEY hKey;
     LONG lResult;
     DWORD dwType = REG_SZ;
