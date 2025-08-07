@@ -108,7 +108,11 @@ int main() {
     std::atomic<unsigned long long> global_false{0};
 
     // 预生成种子，避免在线程中创建
-    std::random_device rd;
+    #ifdef _WIN32
+        std::random_device rd;
+    #elif defined(__linux__)
+        std::random_device rd("/dev/urandom");
+    #endif
     std::vector<uint64_t> seeds(thread_count);
     for (size_t i{0}; i < thread_count; ++i) {
         seeds[i] = (static_cast<uint64_t>(rd()) << 32) | rd() | (i + 1);
