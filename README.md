@@ -27,7 +27,7 @@ https://github.com/fmtlib/fmt.git
 `clang++ -static -O3 *.cpp`  
   
 测试设备硬件参数  
-I9-13900HX，  
-CPU定频4800GHz-5000GHz，  
-CPU电压1.0v-1.2v区间，  
+CPU：I9-13900HX，  
+CPU定频4800GHz-5000GHz区间，  
+CPU稳定电压1.0v-1.2v区间，  
 内存32G-6400MT/s。  
