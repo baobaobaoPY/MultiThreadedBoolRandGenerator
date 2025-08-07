@@ -1,5 +1,5 @@
 #include <fmt/core.h>
-#include <paused.h>
+#include "paused.h"
 #include <iostream>
 #include <random>
 #include <vector>
@@ -125,7 +125,7 @@ int main() {
     auto start_time{std::chrono::high_resolution_clock::now()};
 
     for (unsigned short i{0}; i < thread_count; ++i) {
-        threads.emplace_back([&, i, seed{seeds[i]}] {
+        threads.emplace_back([&, seed{seeds[i]}] {
             // 每个线程独立享用高速伪随机数生成器
             XorShift64Star engine(seed);
 
