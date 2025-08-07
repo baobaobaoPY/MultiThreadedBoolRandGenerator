@@ -1,5 +1,5 @@
 #include <fmt/core.h>
-#include "paused.h"
+#include <paused.h>
 #include <iostream>
 #include <random>
 #include <vector>
@@ -19,14 +19,14 @@ private:
     uint64_t state;
 public:
     using result_type = uint64_t;
-    
+
     XorShift64Star(uint64_t seed = 1) : state(seed) {
         if (state == 0) state = 1;  // 避免全零情况
     }
-    
-    static constexpr uint64_t min() { return 0; }
-    static constexpr uint64_t max() { return UINT64_MAX; }
-    
+
+    static constexpr uint64_t MIN() { return 0; }
+    static constexpr uint64_t MAX() { return UINT64_MAX; }
+
     uint64_t operator()() {
         state ^= state >> 12;
         state ^= state << 25;
