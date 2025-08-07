@@ -28,6 +28,6 @@ https://github.com/fmtlib/fmt.git
   
 测试设备硬件参数  
 CPU：I9-13900HX，  
-CPU定频4.8GHz-5.0GHz区间，  
+CPU定频4.2GHz-4.8GHz区间，  
 CPU稳定电压1.0v-1.2v区间，  
 内存32G-6400MT/s。  
