@@ -23,8 +23,8 @@ https://github.com/fmtlib/fmt.git
 **`-O3`的优化下，V2版本生成160亿次布尔值花费1.5s🤯**  
 ## 其他说明
 编译命令如下(windows/linux)  
-`g++ -static -O3 *.cpp`  
-`clang++ -static -O3 *.cpp`  
+`g++ -std=c++20 -static -O3 *.cpp`  
+`clang++ -std=c++20 -static -O3 *.cpp`  
   
 测试设备硬件参数  
 CPU：I9-13900HX，  
