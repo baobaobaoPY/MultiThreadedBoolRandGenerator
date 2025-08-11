@@ -51,14 +51,6 @@ inline std::optional<int> AWML::Parse_Cexit(string_view str) noexcept {
     return value;
 };
 
-inline string AWML::find_string(string_view str) noexcept {
-    size_t startPos = str.find('(');
-    if (startPos == string::npos) {return "";}
-    size_t endPos = str.find(')', startPos + 1);
-    if (endPos == string::npos) {return "";}
-    return string(str.substr(startPos + 1, endPos - startPos - 1));
-};
-
 #ifdef _WIN32
 #pragma comment(lib, "advapi32.lib")
 #include <windows.h>
@@ -134,7 +126,6 @@ inline void AWML::paused() {
     else {print("{}", AWML::English);}
     _getch();
 };
-
 
 #elif defined(__linux__)
 #include <termios.h>
