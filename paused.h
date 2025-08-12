@@ -55,6 +55,7 @@ inline std::optional<int> AWML::Parse_Cexit(string_view str) noexcept {
 #pragma comment(lib, "advapi32.lib")
 #include <windows.h>
 #include <conio.h>
+#include <memory>
 
 inline string AWML::GetSystemCodePage() noexcept {
     HKEY hKey;
