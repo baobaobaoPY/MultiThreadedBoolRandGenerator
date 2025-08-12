@@ -18,7 +18,7 @@ using fmt::print;
 **/
 class AWML {
 public:
-    static inline void paused(const string& cexit, const string& msg);
+    static inline void paused(const string& msg, const string& cexit);
     static inline void paused(const string& msg);
     static inline void paused();
 private:
@@ -81,7 +81,7 @@ inline string AWML::GetSystemCodePage() noexcept {
  * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
  * otherwise treated as custom prompt text.
 **/
-inline void AWML::paused(const string& cexit, const string& msg) {
+inline void AWML::paused(const string& msg, const string& cexit) {
     while (_kbhit()) {_getch();}
     auto result = AWML::Parse_Cexit(cexit);
     if (result.has_value()) {
@@ -89,7 +89,7 @@ inline void AWML::paused(const string& cexit, const string& msg) {
         print("{}", msg);
         _getch();
         exit(exit_code);}
-    print("{}", cexit);
+    print("\x1b[91mError: \x1b[4;97m{}\x1b[0m", cexit);
     _getch();
 };
 
@@ -171,7 +171,7 @@ inline string AWML::GetSystemLanguage() noexcept {
  * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
  * otherwise treated as custom prompt text.
 **/
-inline void AWML::paused(const string& cexit, const string& msg) {
+inline void AWML::paused(const string& msg, const string& cexit) {
     tcflush(STDIN_FILENO, TCIFLUSH);
     auto result = AWML::Parse_Cexit(cexit);
     if (result.has_value()) {
@@ -179,7 +179,7 @@ inline void AWML::paused(const string& cexit, const string& msg) {
         print("{}", msg);
         AWML::getch();
         exit(exit_code);}
-    print("{}", cexit);
+    print("\x1b[91mError: \x1b[4;97m{}\x1b[0m", cexit);
     AWML::getch();
 };
 
