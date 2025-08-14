@@ -1,6 +1,7 @@
 #ifndef PAUSED_H_
 #define PAUSED_H_
 
+#include <string_view>
 #include <fmt/core.h>
 #include <optional>
 #include <charconv>
@@ -18,8 +19,8 @@ using fmt::print;
 **/
 class AWML {
 public:
-    static inline void paused(const string& msg, const string& cexit);
-    static inline void paused(const string& msg);
+    static inline void paused(string_view msg, string_view cexit);
+    static inline void paused(string_view msg);
     static inline void paused();
 private:
     static inline std::optional<int> Parse_Cexit(string_view str) noexcept;
@@ -81,15 +82,15 @@ inline string AWML::GetSystemCodePage() noexcept {
  * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
  * otherwise treated as custom prompt text.
 **/
-inline void AWML::paused(const string& msg, const string& cexit) {
+inline void AWML::paused(string_view msg, string_view cexit) {
     while (_kbhit()) {_getch();}
     auto result = AWML::Parse_Cexit(cexit);
     if (result.has_value()) {
         int exit_code = result.value();
-        print("{}", msg);
+        print(stderr, "{}", msg);
         _getch();
         exit(exit_code);}
-    print("\x1b[91mError: \x1b[4;97m{}\x1b[0m", cexit);
+    print(stderr, "\x1b[91mError: \x1b[4;97m{}\x1b[0m", cexit);
     _getch();
 };
 
@@ -98,19 +99,19 @@ inline void AWML::paused(const string& msg, const string& cexit) {
  * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
  * otherwise treated as custom prompt text to display!
 **/
-inline void AWML::paused(const string& msg) {
+inline void AWML::paused(string_view msg) {
     while (_kbhit()) {_getch();}
     auto result = AWML::Parse_Cexit(msg);
     if (result.has_value()) {
         int exit_code = result.value();
         string CodePage = AWML::GetSystemCodePage();
-        if (CodePage == "936") {print("{}", AWML::CSimplified);}
+        if (CodePage == "936") {print(stderr, "{}", AWML::CSimplified);}
         else if (CodePage == "950" || CodePage == "938") \
-            {print("{}", AWML::CTraditional);}
-        else {print("{}", AWML::English);}
+            {print(stderr, "{}", AWML::CTraditional);}
+        else {print(stderr, "{}", AWML::English);}
         _getch();
         exit(exit_code);}
-    print("{}", msg);
+    print(stderr, "{}", msg);
     _getch();
 };
 
@@ -121,10 +122,10 @@ inline void AWML::paused(const string& msg) {
 inline void AWML::paused() {
     while (_kbhit()) {_getch();}
     string CodePage = AWML::GetSystemCodePage();
-    if (CodePage == "936") {print("{}", AWML::CSimplified);}
+    if (CodePage == "936") {print("stderr, {}", AWML::CSimplified);}
     else if (CodePage == "950" || CodePage == "938") \
-        {print("{}", AWML::CTraditional);}
-    else {print("{}", AWML::English);}
+        {print(stderr, "{}", AWML::CTraditional);}
+    else {print(stderr, "{}", AWML::English);}
     _getch();
 };
 
@@ -135,7 +136,6 @@ inline void AWML::paused() {
 
 inline void AWML::getch() noexcept {
     tcflush(STDIN_FILENO, TCIFLUSH);
-    fflush(stdout);
     struct termios termios;
     if (tcgetattr(STDIN_FILENO, &termios) != 0) return;
     const tcflag_t originalLflag = termios.c_lflag;
@@ -146,7 +146,7 @@ inline void AWML::getch() noexcept {
     tcflush(STDIN_FILENO, TCIFLUSH);
     termios.c_lflag = originalLflag;
     tcsetattr(STDIN_FILENO, TCSANOW, &termios);
-    if (result > 0) {print("\12");}
+    if (result > 0) {print(stderr, "\n");}
 }
 
 inline string AWML::GetSystemLanguage() noexcept {
@@ -171,15 +171,15 @@ inline string AWML::GetSystemLanguage() noexcept {
  * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
  * otherwise treated as custom prompt text.
 **/
-inline void AWML::paused(const string& msg, const string& cexit) {
+inline void AWML::paused(string_view msg, string_view cexit) {
     tcflush(STDIN_FILENO, TCIFLUSH);
     auto result = AWML::Parse_Cexit(cexit);
     if (result.has_value()) {
         int exit_code = result.value();
-        print("{}", msg);
+        print(stderr, "{}", msg);
         AWML::getch();
         exit(exit_code);}
-    print("\x1b[91mError: \x1b[4;97m{}\x1b[0m", cexit);
+    print(stderr, "\x1b[91mError: \x1b[4;97m{}\x1b[0m", cexit);
     AWML::getch();
 };
 
@@ -188,19 +188,19 @@ inline void AWML::paused(const string& msg, const string& cexit) {
  * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
  * otherwise treated as custom prompt text to display!
 **/
-inline void AWML::paused(const string& msg) {
+inline void AWML::paused(string_view msg) {
     tcflush(STDIN_FILENO, TCIFLUSH);
     auto result = AWML::Parse_Cexit(msg);
     if (result.has_value()) {
         int exit_code = result.value();
         string language = AWML::GetSystemLanguage();
-        if (language == "zh_CN") {print("{}", AWML::CSimplified);} 
+        if (language == "zh_CN") {print(stderr, "{}", AWML::CSimplified);} 
         else if (language == "zh_TW" || language == "zh_HK") \
-            {print("{}", AWML::CTraditional);}
-        else {print("{}", AWML::English);}
+            {print(stderr, "{}", AWML::CTraditional);}
+        else {print(stderr, "{}", AWML::English);}
         AWML::getch();
         exit(exit_code);}
-    print("{}", msg);
+    print(stderr, "{}", msg);
     AWML::getch();
 };
 
@@ -211,10 +211,10 @@ inline void AWML::paused(const string& msg) {
 inline void AWML::paused() {
     tcflush(STDIN_FILENO, TCIFLUSH);
     string language = AWML::GetSystemLanguage();
-    if (language == "zh_CN") {print("{}", AWML::CSimplified);}
+    if (language == "zh_CN") {print(stderr, "{}", AWML::CSimplified);}
     else if (language == "zh_TW" || language == "zh_HK") \
-        {print("{}", AWML::CTraditional);}
-    else {print("{}", AWML::English);}
+        {print(stderr, "{}", AWML::CTraditional);}
+    else {print(stderr, "{}", AWML::English);}
     AWML::getch();
 };
 #endif  // Windows Linux
