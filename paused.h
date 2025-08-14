@@ -122,7 +122,7 @@ inline void AWML::paused(string_view msg) {
 inline void AWML::paused() {
     while (_kbhit()) {_getch();}
     string CodePage = AWML::GetSystemCodePage();
-    if (CodePage == "936") {print("stderr, {}", AWML::CSimplified);}
+    if (CodePage == "936") {print(stderr, "{}", AWML::CSimplified);}
     else if (CodePage == "950" || CodePage == "938") \
         {print(stderr, "{}", AWML::CTraditional);}
     else {print(stderr, "{}", AWML::English);}
