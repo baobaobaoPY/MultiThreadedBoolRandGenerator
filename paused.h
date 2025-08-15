@@ -11,21 +11,20 @@ using std::string_view;
 using std::string;
 using fmt::print;
 
-/** AWML - API
- * A -> Automatic Derivation Platform
- * W -> Windows
- * M -> Macos
- * L -> Linux
-**/
-class AWML {
-public:
-    static inline void paused(string_view msg, string_view cexit);
-    static inline void paused(string_view msg);
-    static inline void paused();
+namespace AWML {
+    inline void paused(string_view msg, string_view cexit);
+    inline void paused(string_view msg);
+    inline void paused();
+};
+
+class Stop {
 private:
+    friend inline void AWML::paused(string_view msg, string_view cexit);
+    friend inline void AWML::paused(string_view msg);
+    friend inline void AWML::paused();
+
     static inline std::optional<int> Parse_Cexit(string_view str) noexcept;
     static inline string find_string(string_view str) noexcept;
-
     static inline constexpr string_view \
     CSimplified{"\u8BF7\u6309\u4EFB\u610F\u952E\u7EE7\u7EED. . ."},
     CTraditional{"\u8ACB\u6309\u4EFB\u610F\u9375\u7E7C\u7E8C. . ."},
@@ -34,9 +33,40 @@ private:
     static inline string GetSystemCodePage() noexcept;
     static inline void getch() noexcept;
     static inline string GetSystemLanguage() noexcept;
+
+    static inline void paused(string_view msg, string_view cexit);
+    static inline void paused(string_view msg);
+    static inline void paused();
 };
 
-inline std::optional<int> AWML::Parse_Cexit(string_view str) noexcept {
+/** AWML - API
+ * A -> Automatic Derivation Platform
+ * W -> Windows
+ * M -> Macos
+ * L -> Linux
+**/
+namespace AWML {
+    /**
+    * Pauses program execution and waits for keypress, supporting custom prompts and exit commands.
+    * Displays user-defined prompt text or exit message when required.
+    * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
+    * otherwise treated as custom prompt text.
+    **/
+    inline void paused(string_view msg, string_view cexit) {Stop::paused(msg, cexit);}
+    /**
+    * Pauses program execution and waits for a keypress, displaying system-default prompt message based on OS language.
+    * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
+    * otherwise treated as custom prompt text to display!
+    **/
+    inline void paused(string_view msg) {Stop::paused(msg);}
+    /**
+    * Pauses program execution and waits for a keypress, displaying system language-specific default prompt message
+    * No-parameter version, only shows the default "Press any key to continue" prompt
+    **/
+    inline void paused() {Stop::paused();}
+};
+
+inline std::optional<int> Stop::Parse_Cexit(string_view str) noexcept {
     int value;
     constexpr string_view prefix = "exit(";
     if (str.compare(0, prefix.size(), prefix) != 0 || str.back() != ')')
@@ -58,7 +88,7 @@ inline std::optional<int> AWML::Parse_Cexit(string_view str) noexcept {
 #include <conio.h>
 #include <memory>
 
-inline string AWML::GetSystemCodePage() noexcept {
+inline string Stop::GetSystemCodePage() noexcept {
     HKEY hKey;
     LONG lResult;
     DWORD dwType = REG_SZ;
@@ -76,15 +106,9 @@ inline string AWML::GetSystemCodePage() noexcept {
     return string(buffer.get());
 };
 
-/**
- * Pauses program execution and waits for keypress, supporting custom prompts and exit commands.
- * Displays user-defined prompt text or exit message when required.
- * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
- * otherwise treated as custom prompt text.
-**/
-inline void AWML::paused(string_view msg, string_view cexit) {
+inline void Stop::paused(string_view msg, string_view cexit) {
     while (_kbhit()) {_getch();}
-    auto result = AWML::Parse_Cexit(cexit);
+    auto result = Stop::Parse_Cexit(cexit);
     if (result.has_value()) {
         int exit_code = result.value();
         print(stderr, "{}", msg);
@@ -94,38 +118,29 @@ inline void AWML::paused(string_view msg, string_view cexit) {
     _getch();
 };
 
-/**
- * Pauses program execution and waits for a keypress, displaying system-default prompt message based on OS language.
- * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
- * otherwise treated as custom prompt text to display!
-**/
-inline void AWML::paused(string_view msg) {
+inline void Stop::paused(string_view msg) {
     while (_kbhit()) {_getch();}
-    auto result = AWML::Parse_Cexit(msg);
+    auto result = Stop::Parse_Cexit(msg);
     if (result.has_value()) {
         int exit_code = result.value();
-        string CodePage = AWML::GetSystemCodePage();
-        if (CodePage == "936") {print(stderr, "{}", AWML::CSimplified);}
+        string CodePage = Stop::GetSystemCodePage();
+        if (CodePage == "936") {print(stderr, "{}", Stop::CSimplified);}
         else if (CodePage == "950" || CodePage == "938") \
-            {print(stderr, "{}", AWML::CTraditional);}
-        else {print(stderr, "{}", AWML::English);}
+            {print(stderr, "{}", Stop::CTraditional);}
+        else {print(stderr, "{}", Stop::English);}
         _getch();
         exit(exit_code);}
     print(stderr, "{}", msg);
     _getch();
 };
 
-/**
- * Pauses program execution and waits for a keypress, displaying system language-specific default prompt message
- * No-parameter version, only shows the default "Press any key to continue" prompt
-**/
-inline void AWML::paused() {
+inline void Stop::paused() {
     while (_kbhit()) {_getch();}
-    string CodePage = AWML::GetSystemCodePage();
-    if (CodePage == "936") {print(stderr, "{}", AWML::CSimplified);}
+    string CodePage = Stop::GetSystemCodePage();
+    if (CodePage == "936") {print(stderr, "{}", Stop::CSimplified);}
     else if (CodePage == "950" || CodePage == "938") \
-        {print(stderr, "{}", AWML::CTraditional);}
-    else {print(stderr, "{}", AWML::English);}
+        {print(stderr, "{}", Stop::CTraditional);}
+    else {print(stderr, "{}", Stop::English);}
     _getch();
 };
 
@@ -134,7 +149,7 @@ inline void AWML::paused() {
 #include <unistd.h>
 #include <fstream>
 
-inline void AWML::getch() noexcept {
+inline void Stop::getch() noexcept {
     tcflush(STDIN_FILENO, TCIFLUSH);
     struct termios termios;
     if (tcgetattr(STDIN_FILENO, &termios) != 0) return;
@@ -149,7 +164,7 @@ inline void AWML::getch() noexcept {
     if (result > 0) {print(stderr, "\n");}
 }
 
-inline string AWML::GetSystemLanguage() noexcept {
+inline string Stop::GetSystemLanguage() noexcept {
     try {std::ifstream f("/etc/locale.conf");
         if (!f) return "C";
         string line;
@@ -165,57 +180,42 @@ inline string AWML::GetSystemLanguage() noexcept {
     catch (...) {return "C";}
 };
 
-/**
- * Pauses program execution and waits for keypress, supporting custom prompts and exit commands.
- * Displays user-defined prompt text or exit message when required.
- * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
- * otherwise treated as custom prompt text.
-**/
-inline void AWML::paused(string_view msg, string_view cexit) {
+inline void Stop::paused(string_view msg, string_view cexit) {
     tcflush(STDIN_FILENO, TCIFLUSH);
-    auto result = AWML::Parse_Cexit(cexit);
+    auto result = Stop::Parse_Cexit(cexit);
     if (result.has_value()) {
         int exit_code = result.value();
         print(stderr, "{}", msg);
-        AWML::getch();
+        Stop::getch();
         exit(exit_code);}
     print(stderr, "\x1b[91mError: \x1b[4;97m{}\x1b[0m", cexit);
-    AWML::getch();
+    Stop::getch();
 };
 
-/**
- * Pauses program execution and waits for a keypress, displaying system-default prompt message based on OS language.
- * Control command string - if formatted as "exit(number)", terminates program with specified exit code;
- * otherwise treated as custom prompt text to display!
-**/
-inline void AWML::paused(string_view msg) {
+inline void Stop::paused(string_view msg) {
     tcflush(STDIN_FILENO, TCIFLUSH);
-    auto result = AWML::Parse_Cexit(msg);
+    auto result = Stop::Parse_Cexit(msg);
     if (result.has_value()) {
         int exit_code = result.value();
-        string language = AWML::GetSystemLanguage();
-        if (language == "zh_CN") {print(stderr, "{}", AWML::CSimplified);} 
+        string language = Stop::GetSystemLanguage();
+        if (language == "zh_CN") {print(stderr, "{}", Stop::CSimplified);} 
         else if (language == "zh_TW" || language == "zh_HK") \
-            {print(stderr, "{}", AWML::CTraditional);}
-        else {print(stderr, "{}", AWML::English);}
-        AWML::getch();
+            {print(stderr, "{}", Stop::CTraditional);}
+        else {print(stderr, "{}", Stop::English);}
+        Stop::getch();
         exit(exit_code);}
     print(stderr, "{}", msg);
-    AWML::getch();
+    Stop::getch();
 };
 
-/**
- * Pauses program execution and waits for a keypress, displaying system language-specific default prompt message
- * No-parameter version, only shows the default "Press any key to continue" prompt
-**/
-inline void AWML::paused() {
+inline void Stop::paused() {
     tcflush(STDIN_FILENO, TCIFLUSH);
-    string language = AWML::GetSystemLanguage();
-    if (language == "zh_CN") {print(stderr, "{}", AWML::CSimplified);}
+    string language = Stop::GetSystemLanguage();
+    if (language == "zh_CN") {print(stderr, "{}", Stop::CSimplified);}
     else if (language == "zh_TW" || language == "zh_HK") \
-        {print(stderr, "{}", AWML::CTraditional);}
-    else {print(stderr, "{}", AWML::English);}
-    AWML::getch();
+        {print(stderr, "{}", Stop::CTraditional);}
+    else {print(stderr, "{}", Stop::English);}
+    Stop::getch();
 };
 #endif  // Windows Linux
 
