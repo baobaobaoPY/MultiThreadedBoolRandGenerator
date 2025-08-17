@@ -2,9 +2,9 @@
 #define PAUSED_H_
 
 #include <string_view>
-#include <fmt/core.h>
-#include <optional>
+#include <fmt/base.h>
 #include <charconv>
+#include <optional>
 #include <string>
 
 using std::string_view;
