@@ -1,6 +1,7 @@
 #ifndef PAUSED_H_
 #define PAUSED_H_
 
+#define FMT_HEADER_ONLY
 #include <string_view>
 #include <fmt/base.h>
 #include <charconv>
@@ -96,8 +97,7 @@ inline string Stop::GetSystemCodePage() noexcept {
     lResult = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Nls\\CodePage", 0, KEY_READ, &hKey);
     if (lResult != ERROR_SUCCESS) {return "";}
     lResult = RegQueryValueExA(hKey, "OEMCP", NULL, &dwType, NULL, &dwSize);
-    if (lResult != ERROR_SUCCESS || dwSize == 0) {
-        RegCloseKey(hKey);
+    if (lResult != ERROR_SUCCESS || dwSize == 0) { RegCloseKey(hKey);
         return "";}
     std::unique_ptr<char[]> buffer(new char[dwSize]);
     lResult = RegQueryValueExA(hKey, "OEMCP", NULL, &dwType, (LPBYTE)buffer.get(), &dwSize);
