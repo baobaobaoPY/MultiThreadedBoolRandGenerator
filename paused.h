@@ -149,7 +149,7 @@ inline void Stop::getch() noexcept {
     tcflush(STDIN_FILENO, TCIFLUSH);
     struct termios termios;
     if (tcgetattr(STDIN_FILENO, &termios) != 0) return;
-    constexpr tcflag_t originalLflag = termios.c_lflag;
+    const tcflag_t originalLflag = termios.c_lflag;
     termios.c_lflag &= ~(ICANON | ECHO);
     if (tcsetattr(STDIN_FILENO, TCSANOW, &termios) != 0) return;
     char ch;
