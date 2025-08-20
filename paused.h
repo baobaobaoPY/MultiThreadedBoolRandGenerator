@@ -1,9 +1,8 @@
 #ifndef PAUSED_H_
 #define PAUSED_H_
 
-#define FMT_HEADER_ONLY
 #include <string_view>
-#include <fmt/base.h>
+#include <fmt/core.h>
 #include <charconv>
 #include <optional>
 #include <string>
